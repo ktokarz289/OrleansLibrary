@@ -51,7 +51,8 @@ namespace OrleansLibraryServer
         {
             await silo.StartAsync();
             await client.Connect();
-
+            var librarySetup = new LibrarySetup(client);
+            await librarySetup.Configure("books.json");
             Console.WriteLine("Setup complete");
         }
 

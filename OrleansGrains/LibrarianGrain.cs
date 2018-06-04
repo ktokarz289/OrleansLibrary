@@ -11,6 +11,12 @@ namespace OrleansGrains
     {
         List<Book> LibraryBooks = new List<Book>();
 
+        public Task AddBook(Book book)
+        {
+            LibraryBooks.Add(book);
+            return Task.CompletedTask;
+        }
+
         public Task<Book> CheckoutBook(string name)
         {
             var book = LibraryBooks.Where(lb => lb.Name == name).First();
