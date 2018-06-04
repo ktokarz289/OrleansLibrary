@@ -5,6 +5,7 @@ namespace OrleansGrainInterfaces
 {
     public interface ILibrarianGrain : IGrainWithIntegerKey
     {
+        Task AddBook(Book book);
         Task<string> GetBooks();
         Task<Book> CheckoutBook(string name);
     }
