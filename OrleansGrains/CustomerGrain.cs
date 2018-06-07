@@ -56,11 +56,11 @@ namespace OrleansGrains
             {
                 case "checkout":
                     var bookName = commands[1].Trim();
-                    var book = CheckoutBook(bookName);
+                    var book = await CheckoutBook(bookName).ConfigureAwait(false);
 
                     if (book != null)
                     {
-                        return $"{bookName} was checked out!";
+                        return $"{book.Name} was checked out!";
                     }
                     else
                     {
