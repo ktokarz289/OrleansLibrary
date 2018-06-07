@@ -12,17 +12,17 @@ namespace OrleansGrains
         private Librarian Librarian;
         private List<Book> Books = new List<Book>();
 
-        public Task<Book> CheckoutBook(string name)
+        public async Task<Book> CheckoutBook(string name)
         {
             var librarian = GrainFactory.GetGrain<ILibrarianGrain>(Librarian.LibrarianId);
-            var book = librarian.CheckoutBook(name).Result;
+            var book = await librarian.CheckoutBook(name);
 
             if (book != null)
             {
                 AddBook(book);
             }
 
-            return Task.FromResult(book);
+            return book;
         }
 
         private void AddBook(Book book)
@@ -49,7 +49,7 @@ namespace OrleansGrains
             return Task.CompletedTask;
         }
 
-        public Task<string> Command(string args)
+        public async Task<string> Command(string args)
         {
             var commands = args.Split("-");
             switch (commands[0].Trim())
@@ -60,18 +60,18 @@ namespace OrleansGrains
 
                     if (book != null)
                     {
-                        return Task.FromResult($"{bookName} was checked out!");
+                        return $"{bookName} was checked out!";
                     }
                     else
                     {
-                        return Task.FromResult("The library doesn't have that book");
+                        return "The library doesn't have that book";
                     }
                 case "list books":
-                    return GetBooks();
+                    return await GetBooks().ConfigureAwait(false);
                 case "quit":
-                    return Task.FromResult("");
+                    return "";
                 default:
-                    return Task.FromResult("I don't know how to do that");
+                    return "I don't know how to do that";
             }
         }
     }
