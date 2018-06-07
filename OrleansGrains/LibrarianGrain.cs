@@ -19,7 +19,7 @@ namespace OrleansGrains
 
         public Task<Book> CheckoutBook(string name)
         {
-            var book = LibraryBooks.Where(lb => lb.Name == name).First();
+            var book = LibraryBooks.Where(lb => lb.Name == name).FirstOrDefault();
 
             if (LibraryBooks.Any(lb => lb.Name == name))
             {
