@@ -17,6 +17,12 @@ namespace OrleansGrains
             return Task.CompletedTask;
         }
 
+        public Task<bool> CheckinBook(Book book)
+        {
+            LibraryBooks.Add(book);
+            return Task.FromResult(true);
+        }
+
         public Task<Book> CheckoutBook(string name)
         {
             var book = LibraryBooks.Where(lb => lb.Name == name).FirstOrDefault();

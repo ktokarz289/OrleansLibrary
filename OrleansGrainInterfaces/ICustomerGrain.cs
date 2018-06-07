@@ -7,6 +7,7 @@ namespace OrleansGrainInterfaces
     {
         Task<string> GetBooks();
         Task<Book> CheckoutBook(string name);
+        Task<bool> CheckinBook(string name);
         Task SetLibrarian(Librarian librarian);
         Task<string> Command(string args);
     }

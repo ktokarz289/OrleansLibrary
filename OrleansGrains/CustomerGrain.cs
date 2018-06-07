@@ -25,9 +25,28 @@ namespace OrleansGrains
             return book;
         }
 
+        public async Task<bool> CheckinBook(string name)
+        {
+            var book = await GetBook(name);
+            if (book == null)
+            {
+                return false;
+            }
+
+            Books.Remove(book);
+
+            var librarian = GrainFactory.GetGrain<ILibrarianGrain>(Librarian.LibrarianId);
+            return await librarian.CheckinBook(book).ConfigureAwait(false);
+        }
+
         private void AddBook(Book book)
         {
             Books.Add(book);
+        }
+
+        public Task<Book> GetBook(string bookName)
+        {
+            return Task.FromResult(Books.Where(b => b.Name == bookName).FirstOrDefault());
         }
 
         public Task<string> GetBooks()
@@ -65,6 +84,18 @@ namespace OrleansGrains
                     else
                     {
                         return "The library doesn't have that book";
+                    }
+                case "checkin":
+                    var name = commands[1].Trim();
+                    var isCheckedIn = await CheckinBook(name).ConfigureAwait(false);
+
+                    if (isCheckedIn)
+                    {
+                        return $"{name} was checked in!";
+                    }
+                    else
+                    {
+                        return "The Librarian couldn't accept your book!";
                     }
                 case "list books":
                     return await GetBooks().ConfigureAwait(false);
