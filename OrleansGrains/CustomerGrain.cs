@@ -12,13 +12,17 @@ namespace OrleansGrains
         private Librarian Librarian;
         private List<Book> Books = new List<Book>();
 
-        public Task CheckoutBook(string name)
+        public async Task<Book> CheckoutBook(string name)
         {
             var librarian = GrainFactory.GetGrain<ILibrarianGrain>(Librarian.LibrarianId);
-            var book = librarian.CheckoutBook(name).Result;
-            AddBook(book);
+            var book = await librarian.CheckoutBook(name);
 
-            return Task.CompletedTask;
+            if (book != null)
+            {
+                AddBook(book);
+            }
+
+            return book;
         }
 
         private void AddBook(Book book)
@@ -31,6 +35,11 @@ namespace OrleansGrains
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendJoin(", ", Books.Select(b => b.Name));
 
+            if (stringBuilder.ToString() == "")
+            {
+                stringBuilder.Append("I have no books checked out!");
+            }
+
             return Task.FromResult(stringBuilder.ToString());
         }
 
@@ -40,19 +49,29 @@ namespace OrleansGrains
             return Task.CompletedTask;
         }
 
-        public Task<string> Command(string command)
+        public async Task<string> Command(string args)
         {
-            switch (command)
+            var commands = args.Split("-");
+            switch (commands[0].Trim())
             {
                 case "checkout":
-                    Console.WriteLine("What book would you like to check out?");
-                    var bookName = Console.ReadLine();
-                    CheckoutBook(bookName);
-                    return Task.FromResult($"{bookName} was checked out!");
+                    var bookName = commands[1].Trim();
+                    var book = CheckoutBook(bookName);
+
+                    if (book != null)
+                    {
+                        return $"{bookName} was checked out!";
+                    }
+                    else
+                    {
+                        return "The library doesn't have that book";
+                    }
                 case "list books":
-                    return GetBooks();
+                    return await GetBooks().ConfigureAwait(false);
+                case "quit":
+                    return "";
                 default:
-                    return Task.FromResult("I don't know how to do that");
+                    return "I don't know how to do that";
             }
         }
     }
